@@ -1,5 +1,6 @@
 <?php
 
+use App\Entities\NewsItem;
 use App\NewsAggregator;
 use App\Repositories\BrokenProviderRepository;
 use App\Repositories\FoxNewsRepository;
@@ -24,4 +25,4 @@ $aggregator->addProvider(new FoxNewsRepository());
 $aggregator->addProvider(new BrokenProviderRepository());
 $news = $aggregator->get();
 
-print_r($news);
+print_r(array_map(fn(NewsItem $item) => $item->toArray(), $news->toArray()));

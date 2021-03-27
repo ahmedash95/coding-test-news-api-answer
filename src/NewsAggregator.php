@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Entities\NewsItem;
+use App\Entities\NewsCollection;
 use App\Repositories\NewsRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -34,15 +34,13 @@ class NewsAggregator
 		$this->providers[] = $repository;
 	}
 
-	public function get()
+	public function get(): NewsCollection
 	{
-		$news = [];
+		$news = new NewsCollection();
+
 		foreach ($this->providers as $provider) {
-			/** @var NewsItem $item */
 			try {
-				foreach ($provider->all() as $item) {
-					$news[] = $item->toArray();
-				}
+				$news->merge($provider->all());
 			} catch (RuntimeException $e) {
 				$this->logger->error(sprintf('Provider [%s] data not found.', get_class($provider)));
 			}
