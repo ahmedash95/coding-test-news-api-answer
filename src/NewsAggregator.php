@@ -1,47 +1,51 @@
 <?php
 
-
 namespace App;
 
-
-use Package\FoxNews\FoxNews;
-use Package\NYTimes\NewYorkTimes;
+use App\Entities\NewsItem;
+use App\Repositories\NewsRepositoryInterface;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class NewsAggregator
 {
+	/**
+	 * @var NewsRepositoryInterface[] $providers
+	 */
+	private array $providers = [];
 
-	private $foxNews;
-	private $newYorkTimes;
+	/**
+	 * @var LoggerInterface
+	 */
+	private LoggerInterface $logger;
 
-	public function __construct()
+	/**
+	 * NewsAggregator constructor.
+	 * @param LoggerInterface $logger
+	 */
+	public function __construct(LoggerInterface $logger)
 	{
-		$this->foxNews = new FoxNews();
-		$this->newYorkTimes = new NewYorkTimes();
+		$this->logger = $logger;
+	}
+
+
+	public function addProvider(NewsRepositoryInterface $repository)
+	{
+		$this->providers[] = $repository;
 	}
 
 	public function get()
 	{
 		$news = [];
-		foreach ($this->foxNews->getNewsFromAPI()['articles'] as $row) {
-			$news[] = [
-				'title' => $row['title'],
-				'author' => $row['author'],
-				'image' => $row['urlToImage'],
-				'publish_date' => $row['publishedAt'],
-				'source' => $row['source']['name'],
-				'url' => $row['url'],
-			];
-		}
-
-		foreach ($this->newYorkTimes->getNews()->articles as $row) {
-			$news[] = [
-				'title' => (string) $row->title,
-				'author' => (string) $row->author,
-				'image' => (string) $row->image,
-				'publish_date' => (string) $row->published_at,
-				'source' => (string) $row->source,
-				'url' => (string) $row->url,
-			];
+		foreach ($this->providers as $provider) {
+			/** @var NewsItem $item */
+			try {
+				foreach ($provider->all() as $item) {
+					$news[] = $item->toArray();
+				}
+			} catch (RuntimeException $e) {
+				$this->logger->error(sprintf('Provider [%s] data not found.', get_class($provider)));
+			}
 		}
 
 		return $news;

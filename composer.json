@@ -4,5 +4,9 @@
 			"App\\": "src/",
 			"Package\\": "package/"
 		}
+	},
+	"require": {
+		"monolog/monolog": "^2.2",
+		"symfony/var-dumper": "^5.2"
 	}
 }
