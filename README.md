@@ -1,3 +1,17 @@
+# Update
+This is an implementation of a possible solution that can be applied to solve the addressed problems.
+
+Problems we addressed:
+- Hard/Coupled dependencies.
+- Any change to any provider affects the Aggregator  (open close principle).
+- No Interfaces (same as first point)
+
+The solution:
+- Dependency Injection. code is decoupled now. providers are separated from Aggregator.
+- Providers are now open to extension and closed to modifications. new providers can simply be added to the aggregator by implementation the interface and just use `->addProvider()` method.
+- Code can easily be tested.
+- SRP as all parts in the code own one thing.
+
 # News API
 
 This simple applications loads the important news from 2 sources
