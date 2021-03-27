@@ -31,15 +31,18 @@ final class AggregatorTest extends TestCase
 
 	public function test_provider_errors_are_catchable()
 	{
-		$this->logger->method('error')
+		$this->logger
+			->expects($this->once())
+			->method('error')
 			->with($this->callback(function ($message) {
-				return $message == "Provider [TestBrokenRepository] data not found.";
+				$this->assertEquals($message, "Provider [TestBrokenRepository] data not found.");
+				return true;
 			}));
+
 		$aggregator = new NewsAggregator($this->logger);
 		$aggregator->addProvider(new TestBrokenRepository());
 		$aggregator->get();
 
-		$this->assertTrue(true);
 	}
 
 	public function test_provider_errors_does_not_break_aggregator()
