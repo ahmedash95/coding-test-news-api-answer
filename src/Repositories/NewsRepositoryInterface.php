@@ -6,5 +6,5 @@ use App\Entities\NewsCollection;
 
 interface NewsRepositoryInterface
 {
-	public function all() : NewsCollection;
+    public function all(): NewsCollection;
 }

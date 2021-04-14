@@ -9,7 +9,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-require __DIR__.DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR."autoload.php";
+require __DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
 $output = "[%datetime%] %channel%.%level_name%: %message% %context.user%\n";
 $formatter = new LineFormatter($output);
@@ -25,4 +25,4 @@ $aggregator->addProvider(new FoxNewsRepository());
 $aggregator->addProvider(new BrokenProviderRepository());
 $news = $aggregator->get();
 
-print_r(array_map(fn(NewsItem $item) => $item->toArray(), $news->toArray()));
+print_r(array_map(fn (NewsItem $item) => $item->toArray(), $news->toArray()));
